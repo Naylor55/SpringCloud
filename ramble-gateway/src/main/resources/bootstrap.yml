@@ -1,0 +1,37 @@
+server:
+  port: 8100
+
+
+spring:
+  application:
+    name: ramble-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.27:8849
+      config:
+        server-addr: 192.168.1.27:8849
+    gateway:
+      httpclient:
+        connect-timeout: 60000   #?????60s
+        response-timeout: 600000 #?????600s
+      routes:
+        - id: car-service
+          predicates:
+            - Path=/car/**
+          uri: lb://car-service
+#          filters:
+#            - StripPrefix=1
+        - id: user-service
+          predicates:
+            - Path=/user/**
+          uri: lb://user-service
+          filters:
+            - StripPrefix=1
+      default-filters:
+        - StripPrefix=1
+
+logging:
+  level:
+    org.springframework.cloud : debug
+    org.springframework.cloud.gateway.filter.LoadBalancerClientFilter: info
